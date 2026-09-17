@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import { renderMarkdown, formatTime } from '../lib/utils';
 import { Bot, User, Send, StopCircle } from 'lucide-react'; // we installed lucide-react
+import PropTypes from 'prop-types';
 
 export default function ChatArea({ 
   messages, 
@@ -13,7 +14,9 @@ export default function ChatArea({
   const [inputValue, setInputValue] = React.useState('');
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    });
   };
 
   useEffect(() => {
@@ -117,3 +120,15 @@ export default function ChatArea({
     </div>
   );
 }
+
+ChatArea.propTypes = {
+  messages: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    role: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    timestamp: PropTypes.instanceOf(Date)
+  })).isRequired,
+  isLoading: PropTypes.bool.isRequired,
+  onSendMessage: PropTypes.func.isRequired,
+  children: PropTypes.node
+};

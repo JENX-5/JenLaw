@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { 
   ScanSearch, 
   BookOpen, 
@@ -99,3 +100,9 @@ export default function QuickActions({ onRunAction, hasDocument, hasTwoDocuments
     </div>
   );
 }
+
+QuickActions.propTypes = {
+  onRunAction: PropTypes.func.isRequired,
+  hasDocument: PropTypes.bool.isRequired,
+  hasTwoDocuments: PropTypes.bool.isRequired
+};

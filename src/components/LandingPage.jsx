@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export default function LandingPage({ onOpenApp }) {
   return (
@@ -105,3 +106,7 @@ export default function LandingPage({ onOpenApp }) {
     </div>
   );
 }
+
+LandingPage.propTypes = {
+  onOpenApp: PropTypes.func.isRequired
+};

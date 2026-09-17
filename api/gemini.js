@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
   if (apiKeys.length === 0) {
     res.statusCode = 500;
-    return res.end(JSON.stringify({ error: 'GEMINI_API_KEY is not configured on the server.' }));
+    return res.end(JSON.stringify({ error: 'Internal Server Error: AI service unavailable.' }));
   }
 
   // Randomly select a key to distribute load across projects

@@ -25,7 +25,16 @@ export function formatTime(date) {
 export function renderMarkdown(md) {
   if (!md) return '';
   const rawHtml = marked.parse(md);
-  return DOMPurify.sanitize(rawHtml);
+  
+  // Secure configuration for DOMPurify
+  return DOMPurify.sanitize(rawHtml, {
+    ALLOWED_TAGS: [
+      'b', 'i', 'em', 'strong', 'a', 'p', 'br', 'ul', 'ol', 'li', 
+      'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code', 'pre', 'blockquote',
+      'table', 'thead', 'tbody', 'tr', 'th', 'td', 'hr', 'del'
+    ],
+    ALLOWED_ATTR: ['href', 'title', 'target', 'rel', 'class'],
+  });
 }
 
 export async function extractTextFromPDF(file) {

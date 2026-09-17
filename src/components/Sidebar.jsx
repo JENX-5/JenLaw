@@ -1,7 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { extractTextFromPDF } from '../lib/utils';
 import { SAMPLE_DOCS } from '../lib/sampleDocs';
-import { FileUp, FileText, Trash2, Edit3, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { FileText } from 'lucide-react';
+import DocumentSlot from './DocumentSlot';
 
 export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, onClose }) {
   const fileInputARef = useRef(null);
@@ -15,7 +17,7 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
   // Track which document is currently being previewed in the bottom pane
   const [activePreview, setActivePreview] = useState('A');
 
-  const handleFileUpload = async (e, isDocB) => {
+  const handleFileUpload = useCallback(async (e, isDocB) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -40,15 +42,15 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
     }
     // reset input
     e.target.value = '';
-  };
+  }, [setDocA, setDocB]);
 
-  const handlePasteClick = (target) => {
+  const handlePasteClick = useCallback((target) => {
     setPastingTarget(target);
     setPasteText('');
     setIsPasting(true);
-  };
+  }, []);
 
-  const submitPaste = () => {
+  const submitPaste = useCallback(() => {
     if (!pasteText.trim()) {
       setIsPasting(false);
       return;
@@ -58,77 +60,16 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
     setActivePreview(pastingTarget);
     setIsPasting(false);
     setPasteText('');
-  };
+  }, [pasteText, pastingTarget, setDocA, setDocB]);
 
-  const loadSample = (sample) => {
+  const loadSample = useCallback((sample) => {
     // If A is empty, load into A. Otherwise load into B.
     const isDocB = docA.text ? true : false;
     const setDoc = isDocB ? setDocB : setDocA;
     setDoc({ name: sample.name, text: sample.text, type: sample.type || 'text/plain' });
     setActivePreview(isDocB ? 'B' : 'A');
     setShowSamples(false);
-  };
-
-  const renderSlot = (title, doc, setDoc, fileInputRef, targetStr) => {
-    const isLoaded = !!doc.text;
-    const isActive = activePreview === targetStr && isLoaded;
-
-    if (!isLoaded) {
-      return (
-        <div className="doc-slot">
-          <div className="doc-slot-header">
-            <span className="doc-slot-title">{title}</span>
-          </div>
-          <div 
-            className="doc-slot-empty" 
-            onClick={() => fileInputRef.current?.click()}
-          >
-             <FileUp size={24} className="doc-slot-empty-icon" />
-             <div className="doc-slot-empty-text">Upload {title}</div>
-             <div className="doc-slot-empty-hint">PDF, TXT, MD</div>
-          </div>
-          <div className="doc-slot-actions">
-            <button className="btn-slot-action" onClick={() => handlePasteClick(targetStr)}>
-              <Edit3 size={14} /> Paste Text
-            </button>
-            <input 
-              type="file" 
-              ref={fileInputRef}
-              onChange={(e) => handleFileUpload(e, targetStr === 'B')}
-              style={{display: 'none'}}
-              accept=".pdf,.txt,.md,text/plain,application/pdf" 
-            />
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <div 
-        className="doc-slot" 
-        style={{ 
-          borderColor: isActive ? 'var(--accent)' : 'var(--border)',
-          boxShadow: isActive ? '0 0 0 1px var(--accent-subtle)' : 'none',
-          cursor: 'pointer'
-        }} 
-        onClick={() => setActivePreview(targetStr)}
-      >
-        <div className="doc-slot-header">
-          <span className="doc-slot-title">{title}</span>
-          <CheckCircle2 size={16} color="var(--green)" />
-        </div>
-        <div className="doc-slot-loaded">
-          <div className="doc-slot-filename">{doc.name || 'Untitled Document'}</div>
-          <div className="doc-slot-meta">{Math.round(doc.text.length / 1000)}k chars</div>
-        </div>
-        <div className="doc-slot-actions">
-          <button className="btn-slot-action" onClick={(e) => { e.stopPropagation(); setDoc({ name: '', text: '', type: '' }); if(activePreview === targetStr) setActivePreview(targetStr === 'A' ? 'B' : 'A'); }}>
-            <Trash2 size={14} /> Remove
-          </button>
-        </div>
-      </div>
-    );
-  };
+  }, [docA.text, setDocA, setDocB]);
 
   const renderDocumentPreview = () => {
     const activeDoc = activePreview === 'A' ? docA : docB;
@@ -145,7 +86,7 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
     }
     
     return (
-      <div className="doc-preview-content">
+      <div className="doc-preview-content" tabIndex={0} aria-label={`Previewing Document ${activePreview}`}>
         <div className="doc-preview-meta">
           <span className="meta-badge" style={{ fontWeight: '500' }}>
             Previewing: Document {activePreview}
@@ -170,7 +111,7 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
             <span style={{ fontSize: '16px', fontWeight: 800, color: 'var(--navy)', letterSpacing: '-0.3px' }}>JenLaw</span>
           </div>
           {onClose && (
-            <button className="icon-btn" onClick={onClose} aria-label="Close sidebar" style={{ padding: '4px' }}>
+            <button className="icon-btn" onClick={onClose} aria-label="Close sidebar" style={{ padding: '4px' }} type="button">
               ✕
             </button>
           )}
@@ -186,6 +127,7 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
               placeholder="Paste your legal text here..."
+              aria-label={`Paste text for Document ${pastingTarget}`}
               style={{
                 width: '100%',
                 height: '300px',
@@ -204,12 +146,14 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
             <div style={{ display: 'flex', gap: '8px' }}>
               <button 
                 onClick={submitPaste}
+                type="button"
                 style={{ flex: 1, padding: '8px', background: 'var(--navy)', color: '#fff', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 600 }}
               >
                 Save
               </button>
               <button 
                 onClick={() => setIsPasting(false)}
+                type="button"
                 style={{ flex: 1, padding: '8px', background: 'transparent', color: 'var(--text-secondary)', borderRadius: '6px', border: '1px solid var(--border)', cursor: 'pointer', fontWeight: 600 }}
               >
                 Cancel
@@ -218,8 +162,28 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
           </div>
         ) : (
           <>
-            {renderSlot('Document A', docA, setDocA, fileInputARef, 'A')}
-            {renderSlot('Document B', docB, setDocB, fileInputBRef, 'B')}
+            <DocumentSlot 
+              title="Document A"
+              doc={docA}
+              setDoc={setDocA}
+              fileInputRef={fileInputARef}
+              targetStr="A"
+              activePreview={activePreview}
+              setActivePreview={setActivePreview}
+              handleFileUpload={handleFileUpload}
+              handlePasteClick={handlePasteClick}
+            />
+            <DocumentSlot 
+              title="Document B"
+              doc={docB}
+              setDoc={setDocB}
+              fileInputRef={fileInputBRef}
+              targetStr="B"
+              activePreview={activePreview}
+              setActivePreview={setActivePreview}
+              handleFileUpload={handleFileUpload}
+              handlePasteClick={handlePasteClick}
+            />
           </>
         )}
       </div>
@@ -238,6 +202,8 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
               <button 
                 key={idx} 
                 onClick={() => loadSample(sample)}
+                type="button"
+                aria-label={`Load sample: ${sample.name}`}
                 style={{
                   background: 'var(--off-white)',
                   border: '1px solid var(--border)',
@@ -285,3 +251,20 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
     </aside>
   );
 }
+
+Sidebar.propTypes = {
+  docA: PropTypes.shape({
+    name: PropTypes.string,
+    text: PropTypes.string,
+    type: PropTypes.string
+  }).isRequired,
+  docB: PropTypes.shape({
+    name: PropTypes.string,
+    text: PropTypes.string,
+    type: PropTypes.string
+  }).isRequired,
+  setDocA: PropTypes.func.isRequired,
+  setDocB: PropTypes.func.isRequired,
+  isSidebarOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func
+};
