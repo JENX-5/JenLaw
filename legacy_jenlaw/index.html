@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JenLaw — Understand Legal Documents with Confidence</title>
+  <meta name="description" content="Upload contracts, agreements, and policies to receive clear explanations, important attention points, and document-grounded answers." />
+  <meta name="theme-color" content="#1E3A5F" />
+  <link rel="icon" type="image/jpeg" href="src/assets/jenlaw_logo.jpg" />
+  <link rel="stylesheet" href="src/css/styles.css" />
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
+</head>
+<body>
+
+<!-- =====================================================
+     LANDING PAGE
+     ===================================================== -->
+<div id="landing">
+
+  <!-- Navigation -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <a href="#" class="nav-logo" aria-label="JenLaw home">
+      <div class="nav-logo-mark" aria-hidden="true">J</div>
+      <span class="nav-logo-text">JenLaw</span>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#landing-disclaimer">Disclaimer</a></li>
+    </ul>
+
+    <button class="btn-nav" onclick="showApp()" id="nav-open-btn">
+      Open App →
+    </button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="hero" aria-labelledby="hero-title">
+
+    <div class="hero-eyebrow" aria-label="AI-powered legal clarity">
+      AI-powered legal clarity
+    </div>
+
+    <h1 class="hero-title" id="hero-title">
+      Understand Legal Documents<br />with Confidence
+    </h1>
+
+    <p class="hero-subtitle">
+      Upload contracts, agreements, and policies to receive clear explanations,
+      important attention points, and document-grounded answers.
+    </p>
+
+    <!-- Upload zone -->
+    <div class="hero-upload-zone" id="hero-upload-zone" role="button" tabindex="0" aria-label="Upload a document">
+      <input type="file" id="hero-file-input" accept=".pdf,.txt,.md,text/plain,application/pdf" aria-label="Choose file to upload" />
+
+      <div class="upload-icon-wrap" aria-hidden="true">
+        <!-- Upload cloud SVG -->
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 16 12 12 8 16"></polyline>
+          <line x1="12" y1="12" x2="12" y2="21"></line>
+          <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+        </svg>
+      </div>
+
+      <h3>Drop your document here or click to upload</h3>
+      <p>Supports PDF, TXT, and Markdown files</p>
+      <p class="supported">PDF · TXT · MD — up to 50 pages</p>
+    </div>
+
+    <!-- CTA buttons -->
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="triggerHeroUpload()" id="hero-upload-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        Upload Document
+      </button>
+      <button class="btn-secondary" onclick="openLandingPaste()" id="hero-paste-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        Paste Text
+      </button>
+    </div>
+
+    <!-- Feature cards -->
+    <div class="feature-cards" id="features" role="list">
+
+      <div class="feature-card" role="listitem">
+        <div class="feature-card-icon" aria-hidden="true">
+          <!-- Document icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <h3>Understand</h3>
+        <p>Explain complex legal language in plain English, so you know exactly what you're agreeing to.</p>
+      </div>
+
+      <div class="feature-card" role="listitem">
+        <div class="feature-card-icon" aria-hidden="true">
+          <!-- Flag icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+            <line x1="4" y1="22" x2="4" y2="15"/>
+          </svg>
+        </div>
+        <h3>Attention Points</h3>
+        <p>Highlight obligations, deadlines, financial commitments, and clauses that deserve careful review.</p>
+      </div>
+
+      <div class="feature-card" role="listitem">
+        <div class="feature-card-icon" aria-hidden="true">
+          <!-- Chat icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <h3>Ask Questions</h3>
+        <p>Ask any document-specific question and get grounded answers drawn directly from the document text.</p>
+      </div>
+
+    </div>
+
+  </section><!-- /hero -->
+
+  <!-- Disclaimer -->
+  <div class="landing-disclaimer" id="landing-disclaimer" role="note" aria-label="Legal disclaimer">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F4A261" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink:0">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <p>
+      <strong>Important:</strong> JenLaw provides legal <em>information</em>, not legal <em>advice</em>. Nothing produced by JenLaw constitutes professional legal advice or replaces a qualified lawyer. Always consult a licensed legal professional for decisions that could materially affect your rights.
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <footer class="landing-footer" role="contentinfo">
+    <a href="#" class="footer-logo" aria-label="JenLaw">
+      <div class="footer-logo-mark">J</div>
+      <span>JenLaw</span>
+    </a>
+    <p class="footer-copy">© 2026 JenLaw · Legal information only — not legal advice.</p>
+  </footer>
+
+</div><!-- /landing -->
+
+
+<!-- =====================================================
+     APP SHELL
+     ===================================================== -->
+<div id="app" class="hidden" role="main">
+
+  <!-- Top bar -->
+  <header class="app-topbar" role="banner">
+    <div class="app-topbar-left">
+      <a href="#" class="app-logo" onclick="showLanding(); return false;" aria-label="JenLaw home">
+        <div class="app-logo-mark" aria-hidden="true">J</div>
+        <span class="app-logo-text">JenLaw</span>
+      </a>
+      <div class="topbar-sep" aria-hidden="true"></div>
+      <span class="doc-title-display" id="doc-title-display" aria-live="polite">No document loaded</span>
+    </div>
+
+    <div class="app-topbar-right">
+      <!-- Role selector -->
+      <div class="role-pill" title="Your role in this document">
+        <label for="role-select">Role:</label>
+        <select id="role-select" aria-label="Your role in the document"></select>
+      </div>
+
+      <!-- Toggle sidebar -->
+      <button class="app-icon-btn" id="sidebar-toggle-btn" onclick="toggleSidebar()" title="Toggle document panel" aria-label="Toggle document panel">
+        ◧
+      </button>
+
+      <!-- Clear chat -->
+      <button class="app-icon-btn" onclick="clearChat()" title="Clear conversation" aria-label="Clear conversation">
+        ↺
+      </button>
+
+      <!-- Settings -->
+      <button class="app-icon-btn" onclick="openSettingsModal()" title="Settings" aria-label="Settings">
+        ⚙
+      </button>
+
+      <!-- Settings shortcut with label for first-time users -->
+      <button class="btn-topbar-primary" onclick="openSettingsModal()" id="api-key-btn">
+        🔑 API Key
+      </button>
+    </div>
+  </header>
+
+  <!-- App body -->
+  <div class="app-body">
+
+    <!-- ── Left Sidebar ── -->
+    <aside class="sidebar" id="sidebar" aria-label="Document panel">
+
+      <div class="sidebar-header">
+        <div class="sidebar-header-title">Document</div>
+
+        <div class="sidebar-upload" id="upload-zone" role="button" tabindex="0" aria-label="Upload a document">
+          <input type="file" id="file-input" accept=".pdf,.txt,.md,text/plain,application/pdf" aria-label="Choose file" />
+          <span class="sidebar-upload-icon" aria-hidden="true">↑</span>
+          <div class="sidebar-upload-text">Drop PDF or click to upload</div>
+          <div class="sidebar-upload-hint">PDF, TXT, MD</div>
+        </div>
+
+        <div class="sidebar-upload-sep">— or —</div>
+
+        <button class="btn-paste" onclick="openPasteModal()" id="paste-btn" aria-label="Paste document text">
+          ⎘ &nbsp;Paste Text
+        </button>
+      </div>
+
+      <div class="doc-preview-area" id="doc-preview-area" aria-label="Document preview" aria-live="polite">
+        <!-- Rendered by JS -->
+      </div>
+
+    </aside>
+
+    <!-- ── Chat area ── -->
+    <div class="chat-area" aria-label="Chat interface">
+
+      <!-- Quick actions bar -->
+      <div class="quick-actions-bar" id="quick-actions-bar" role="toolbar" aria-label="Quick actions">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-messages" id="chat-messages" role="log" aria-live="polite" aria-label="Conversation">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Input -->
+      <div class="chat-input-area">
+        <p class="disclaimer-inline">
+          <span>⚠ Legal information only.</span> Not legal advice — consult a qualified lawyer for important decisions.
+        </p>
+        <div class="input-wrap">
+          <textarea
+            id="chat-input"
+            placeholder="Ask about your document… e.g. 'What are my key obligations?' or 'Explain clause 7.'"
+            rows="1"
+            aria-label="Chat message"
+          ></textarea>
+          <button class="send-btn" id="send-btn" onclick="sendMessage()" aria-label="Send" disabled>
+            ↑
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /chat-area -->
+
+  </div><!-- /app-body -->
+
+</div><!-- /app -->
+
+
+<!-- =====================================================
+     MODALS
+     ===================================================== -->
+
+<!-- Paste Text Modal -->
+<div class="modal-overlay hidden" id="paste-modal" role="dialog" aria-modal="true" aria-labelledby="paste-modal-title">
+  <div class="modal" style="max-width: 640px;">
+    <button class="modal-close" onclick="closePasteModal()" aria-label="Close">✕</button>
+    <h2 class="modal-title" id="paste-modal-title">Paste Document Text</h2>
+    <p class="modal-subtitle">Paste the full text of your legal document below. JenLaw will extract and analyse it based on its actual contents.</p>
+
+    <div class="modal-field-label">Document text</div>
+    <textarea
+      class="modal-textarea"
+      id="paste-textarea"
+      placeholder="Paste your contract, agreement, terms of service, or other legal text here…"
+      aria-label="Document text"
+    ></textarea>
+
+    <div class="modal-actions">
+      <button class="btn-modal-ghost" onclick="closePasteModal()">Cancel</button>
+      <button class="btn-modal-primary" onclick="submitPastedText()" id="paste-submit-btn">Load Document →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal-overlay hidden" id="settings-modal" role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSettingsModal()" aria-label="Close">✕</button>
+    <h2 class="modal-title" id="settings-modal-title">Settings</h2>
+    <p class="modal-subtitle">Connect your Gemini API key to enable full AI analysis. Your key is stored only in your browser — never sent to any external server.</p>
+
+    <div class="modal-info-box">
+      <strong>Get a free API key:</strong> Visit
+      <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com</a>
+      → Create API key. Free tier is sufficient for personal use.
+      <br><br>
+      Without a key, JenLaw runs in <strong>demo mode</strong> with illustrative example responses.
+    </div>
+
+    <div class="modal-field-label">Gemini API Key</div>
+    <input type="password" class="modal-input" id="api-key-input" placeholder="AIza..." autocomplete="off" aria-label="Gemini API key" />
+
+    <div class="modal-field-label">Model</div>
+    <select class="modal-input" id="model-select" aria-label="AI model">
+      <option value="gemini-2.0-flash">Gemini 2.0 Flash — Recommended (fast)</option>
+      <option value="gemini-2.0-flash-thinking-exp">Gemini 2.0 Flash Thinking (advanced)</option>
+      <option value="gemini-1.5-pro">Gemini 1.5 Pro (most capable)</option>
+      <option value="gemini-1.5-flash">Gemini 1.5 Flash (faster)</option>
+    </select>
+
+    <div class="modal-actions">
+      <button class="btn-modal-ghost" onclick="closeSettingsModal()">Cancel</button>
+      <button class="btn-modal-primary" onclick="saveSettings()" id="save-settings-btn">Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+
+<!-- =====================================================
+     SCRIPTS
+     ===================================================== -->
+<script src="src/js/state.js"></script>
+<script src="src/js/utils.js"></script>
+<script src="src/js/prompts.js"></script>
+<script src="src/js/api.js"></script>
+<script src="src/js/ui.js"></script>
+<script src="src/js/app.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Send button enable/disable
+  const input = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('send-btn');
+  if (input && sendBtn) {
+    input.addEventListener('input', () => {
+      sendBtn.disabled = !input.value.trim() || (window.state && window.state.isLoading);
+    });
+  }
+
+  // Hero file input triggers app + file load
+  const heroInput = document.getElementById('hero-file-input');
+  if (heroInput) {
+    heroInput.addEventListener('change', async () => {
+      if (heroInput.files[0]) {
+        showApp();
+        await handleFileUpload(heroInput.files[0]);
+        heroInput.value = '';
+      }
+    });
+  }
+
+  // Hero upload zone drag events
+  const heroZone = document.getElementById('hero-upload-zone');
+  if (heroZone) {
+    heroZone.addEventListener('dragover', e => { e.preventDefault(); heroZone.classList.add('dragging'); });
+    heroZone.addEventListener('dragleave', () => heroZone.classList.remove('dragging'));
+    heroZone.addEventListener('drop', async e => {
+      e.preventDefault();
+      heroZone.classList.remove('dragging');
+      const file = e.dataTransfer.files[0];
+      if (file) { showApp(); await handleFileUpload(file); }
+    });
+  }
+
+  // Close modals on overlay click
+  document.getElementById('paste-modal').addEventListener('click', function(e) {
+    if (e.target === this) closePasteModal();
+  });
+  document.getElementById('settings-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeSettingsModal();
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closePasteModal(); closeSettingsModal(); }
+  });
+
+  // Hide API Key button if key already saved
+  if (localStorage.getItem('jenlaw_api_key')) {
+    const btn = document.getElementById('api-key-btn');
+    if (btn) btn.style.display = 'none';
+  }
+});
+
+function triggerHeroUpload() {
+  document.getElementById('hero-file-input').click();
+}
+
+function openLandingPaste() {
+  showApp();
+  setTimeout(() => openPasteModal(), 100);
+}
+</script>
+
+</body>
+</html>

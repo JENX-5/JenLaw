@@ -1,0 +1,29 @@
+EMPLOYMENT AGREEMENT
+
+This Employment Agreement ("Agreement") is made effective as of October 1, 2026, by and between Acme Corp, a Delaware corporation ("Employer"), and Jane Doe ("Employee").
+
+1. POSITION AND DUTIES
+Employer agrees to employ Employee as Lead Software Engineer. Employee will report to the Chief Technology Officer. Employee agrees to devote their full business time, attention, and best efforts to the performance of their duties.
+
+2. COMPENSATION
+a. Base Salary: Employer shall pay Employee an annual base salary of $165,000, payable in accordance with Employer's standard payroll practices.
+b. Bonus: Employee shall be eligible for an annual performance bonus of up to 15% of their base salary.
+c. Signing Bonus: A one-time signing bonus of $10,000 will be paid on the first payroll cycle.
+
+3. AT-WILL EMPLOYMENT
+Employee's employment is "at-will." This means that either Employer or Employee may terminate the employment relationship at any time, with or without cause. Employer must provide two (2) weeks written notice prior to termination.
+
+4. CONFIDENTIALITY AND INTELLECTUAL PROPERTY
+a. Confidentiality: Employee agrees not to disclose any confidential or proprietary information of the Employer during or after the term of employment.
+b. IP Assignment: Employee agrees that all intellectual property created during working hours or using company resources are the sole property of Acme Corp, excluding pre-existing open source contributions.
+
+5. NON-COMPETITION
+For a period of two (2) years following the termination of employment, Employee shall not directly or indirectly work for or consult with any business that directly competes with Employer globally.
+
+6. GOVERNING LAW
+This Agreement shall be governed by the laws of the State of New York.
+
+By signing below, the parties agree to the terms herein.
+
+Acme Corp: ____________________
+Jane Doe: ____________________
