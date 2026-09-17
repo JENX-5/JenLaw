@@ -177,7 +177,7 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
         </div>
       </div>
 
-      <div className="sidebar-content" style={{ padding: '16px', flex: 1, overflowY: 'auto' }}>
+      <div className="sidebar-content" style={{ padding: '16px', flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         
         {isPasting ? (
           <div className="paste-ui">
@@ -221,47 +221,57 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
             {renderSlot('Document A', docA, setDocA, fileInputARef, 'A')}
             {renderSlot('Document B', docB, setDocB, fileInputBRef, 'B')}
 
-            {/* Sample Documents Dropdown */}
-            <div style={{ marginTop: '24px' }}>
-              <button 
-                className="btn-sample" 
-                onClick={() => setShowSamples(!showSamples)}
-                style={{ justifyContent: 'space-between' }}
-              >
-                <span style={{ display: 'flex', alignItems: 'center' }}>
-                  <FileText size={14} style={{ marginRight: '6px' }} />
-                  Load Sample Document
-                </span>
-                <ChevronDown size={14} style={{ transform: showSamples ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
-              </button>
+            {/* Sample Documents Section */}
+            <div style={{ marginTop: 'auto', paddingTop: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                <div style={{ height: '1px', flex: 1, background: 'var(--border)' }}></div>
+                <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.8px' }}>Or try a sample</span>
+                <div style={{ height: '1px', flex: 1, background: 'var(--border)' }}></div>
+              </div>
               
-              {showSamples && (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', paddingLeft: '8px', borderLeft: '2px solid var(--border)' }}>
-                  {SAMPLE_DOCS.map((sample, idx) => (
-                    <button 
-                      key={idx} 
-                      onClick={() => loadSample(sample)}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--text-secondary)',
-                        fontSize: '13px',
-                        textAlign: 'left',
-                        padding: '6px 8px',
-                        cursor: 'pointer',
-                        borderRadius: '4px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '6px'
-                      }}
-                      onMouseOver={(e) => { e.currentTarget.style.background = 'var(--off-white)'; e.currentTarget.style.color = 'var(--text)'; }}
-                      onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-                    >
-                      • {sample.name}
-                    </button>
-                  ))}
-                </div>
-              )}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {SAMPLE_DOCS.map((sample, idx) => (
+                  <button 
+                    key={idx} 
+                    onClick={() => loadSample(sample)}
+                    style={{
+                      background: 'var(--off-white)',
+                      border: '1px solid var(--border)',
+                      color: 'var(--text)',
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      textAlign: 'left',
+                      padding: '12px 14px',
+                      cursor: 'pointer',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '10px',
+                      transition: 'all var(--t-fast)',
+                      boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                    }}
+                    onMouseOver={(e) => { 
+                      e.currentTarget.style.borderColor = 'var(--accent-border)'; 
+                      e.currentTarget.style.background = 'var(--accent-subtle)'; 
+                      e.currentTarget.style.color = 'var(--accent)'; 
+                      e.currentTarget.style.transform = 'translateY(-1px)';
+                      e.currentTarget.style.boxShadow = '0 4px 12px rgba(99, 102, 241, 0.08)';
+                    }}
+                    onMouseOut={(e) => { 
+                      e.currentTarget.style.borderColor = 'var(--border)'; 
+                      e.currentTarget.style.background = 'var(--off-white)'; 
+                      e.currentTarget.style.color = 'var(--text)'; 
+                      e.currentTarget.style.transform = 'none';
+                      e.currentTarget.style.boxShadow = '0 1px 2px rgba(0,0,0,0.02)';
+                    }}
+                  >
+                    <div style={{ background: 'var(--bg)', padding: '6px', borderRadius: '6px', border: '1px solid var(--border)' }}>
+                      <FileText size={16} />
+                    </div>
+                    {sample.name}
+                  </button>
+                ))}
+              </div>
             </div>
           </>
         )}
