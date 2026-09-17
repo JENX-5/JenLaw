@@ -1,18 +1,19 @@
 import React, { useRef, useState } from 'react';
 import { extractTextFromPDF } from '../lib/utils';
 import { SAMPLE_DOCS } from '../lib/sampleDocs';
-import { FileUp, FilePlus, FileText } from 'lucide-react';
+import { FileUp, FileText, Trash2, Edit3, ChevronDown, CheckCircle2 } from 'lucide-react';
 
 export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, onClose }) {
   const fileInputARef = useRef(null);
   const fileInputBRef = useRef(null);
   
-  const [activeTab, setActiveTab] = useState('A'); // 'A' or 'B'
-  
-  // State for manual paste UI
   const [isPasting, setIsPasting] = useState(false);
   const [pasteText, setPasteText] = useState('');
   const [pastingTarget, setPastingTarget] = useState('A');
+  const [showSamples, setShowSamples] = useState(false);
+  
+  // Track which document is currently being previewed in the bottom pane
+  const [activePreview, setActivePreview] = useState('A');
 
   const handleFileUpload = async (e, isDocB) => {
     const file = e.target.files?.[0];
@@ -29,10 +30,10 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
       const newDoc = { name: file.name, text: text, type: file.type };
       if (isDocB) {
         setDocB(newDoc);
-        setActiveTab('B');
+        setActivePreview('B');
       } else {
         setDocA(newDoc);
-        setActiveTab('A');
+        setActivePreview('A');
       }
     } catch (err) {
       alert(`Error reading document: ${err.message}`);
@@ -41,8 +42,8 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
     e.target.value = '';
   };
 
-  const handlePasteClick = (isDocB) => {
-    setPastingTarget(isDocB ? 'B' : 'A');
+  const handlePasteClick = (target) => {
+    setPastingTarget(target);
     setPasteText('');
     setIsPasting(true);
   };
@@ -54,26 +55,90 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
     }
     const setDoc = pastingTarget === 'B' ? setDocB : setDocA;
     setDoc({ name: 'Pasted Document', text: pasteText, type: 'text/plain' });
-    setActiveTab(pastingTarget);
+    setActivePreview(pastingTarget);
     setIsPasting(false);
     setPasteText('');
   };
 
-  const loadSample = (sample, isDocB) => {
+  const loadSample = (sample) => {
+    // If A is empty, load into A. Otherwise load into B.
+    const isDocB = docA.text ? true : false;
     const setDoc = isDocB ? setDocB : setDocA;
     setDoc({ name: sample.name, text: sample.text, type: sample.type || 'text/plain' });
-    setActiveTab(isDocB ? 'B' : 'A');
+    setActivePreview(isDocB ? 'B' : 'A');
+    setShowSamples(false);
+  };
+
+  const renderSlot = (title, doc, setDoc, fileInputRef, targetStr) => {
+    const isLoaded = !!doc.text;
+    const isActive = activePreview === targetStr && isLoaded;
+
+    if (!isLoaded) {
+      return (
+        <div className="doc-slot">
+          <div className="doc-slot-header">
+            <span className="doc-slot-title">{title}</span>
+          </div>
+          <div 
+            className="doc-slot-empty" 
+            onClick={() => fileInputRef.current?.click()}
+          >
+             <FileUp size={24} className="doc-slot-empty-icon" />
+             <div className="doc-slot-empty-text">Upload {title}</div>
+             <div className="doc-slot-empty-hint">PDF, TXT, MD</div>
+          </div>
+          <div className="doc-slot-actions">
+            <button className="btn-slot-action" onClick={() => handlePasteClick(targetStr)}>
+              <Edit3 size={14} /> Paste Text
+            </button>
+            <input 
+              type="file" 
+              ref={fileInputRef}
+              onChange={(e) => handleFileUpload(e, targetStr === 'B')}
+              style={{display: 'none'}}
+              accept=".pdf,.txt,.md,text/plain,application/pdf" 
+            />
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div 
+        className="doc-slot" 
+        style={{ 
+          borderColor: isActive ? 'var(--accent)' : 'var(--border)',
+          boxShadow: isActive ? '0 0 0 1px var(--accent-subtle)' : 'none',
+          cursor: 'pointer'
+        }} 
+        onClick={() => setActivePreview(targetStr)}
+      >
+        <div className="doc-slot-header">
+          <span className="doc-slot-title">{title}</span>
+          <CheckCircle2 size={16} color="var(--green)" />
+        </div>
+        <div className="doc-slot-loaded">
+          <div className="doc-slot-filename">{doc.name || 'Untitled Document'}</div>
+          <div className="doc-slot-meta">{Math.round(doc.text.length / 1000)}k chars</div>
+        </div>
+        <div className="doc-slot-actions">
+          <button className="btn-slot-action" onClick={(e) => { e.stopPropagation(); setDoc({ name: '', text: '', type: '' }); if(activePreview === targetStr) setActivePreview(targetStr === 'A' ? 'B' : 'A'); }}>
+            <Trash2 size={14} /> Remove
+          </button>
+        </div>
+      </div>
+    );
   };
 
   const renderDocumentPreview = () => {
-    const activeDoc = activeTab === 'A' ? docA : docB;
+    const activeDoc = activePreview === 'A' ? docA : docB;
     
     if (!activeDoc.text) {
       return (
         <div className="doc-preview-empty" style={{marginTop: '2rem'}}>
-          <p>No document loaded.</p>
-          <p style={{fontSize:'0.85rem', color:'var(--text-lighter)', marginTop:'0.5rem'}}>
-            Upload a PDF, TXT, or Markdown file to see it here.
+          <p>No document selected.</p>
+          <p style={{fontSize:'0.85rem', color:'var(--text-faint)', marginTop:'0.5rem'}}>
+            Click on a loaded document above to preview it here.
           </p>
         </div>
       );
@@ -82,17 +147,11 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
     return (
       <div className="doc-preview-content">
         <div className="doc-preview-meta">
-          <span className="meta-badge" style={{color: 'var(--accent)', backgroundColor: '#E5F3EE', border: '1px solid #C3E6DB'}}>
-            ✓ Loaded
-          </span>
           <span className="meta-badge" style={{ fontWeight: '500' }}>
-            Document {activeTab}
-          </span>
-          <span className="meta-badge" style={{color: 'var(--text-light)', border: '1px solid var(--border)'}}>
-            {Math.round(activeDoc.text.length / 1000)}k chars
+            Previewing: Document {activePreview}
           </span>
         </div>
-        <div style={{ padding: '0 1rem', fontSize: '0.85rem', color: 'var(--text-light)', marginBottom: '1rem', fontWeight: 500 }}>
+        <div style={{ padding: '0 1rem', fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', fontWeight: 500 }}>
           {activeDoc.name}
         </div>
         <pre className="doc-preview-text">
@@ -122,7 +181,7 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
         
         {isPasting ? (
           <div className="paste-ui">
-            <div className="sidebar-header-title">Paste Document {pastingTarget}</div>
+            <div className="doc-slot-title" style={{ marginBottom: '12px' }}>Paste Document {pastingTarget}</div>
             <textarea
               value={pasteText}
               onChange={(e) => setPasteText(e.target.value)}
@@ -133,6 +192,8 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
                 padding: '12px',
                 borderRadius: '8px',
                 border: '1px solid var(--border)',
+                background: 'var(--bg)',
+                color: 'var(--text)',
                 fontFamily: 'var(--font)',
                 fontSize: '13px',
                 resize: 'vertical',
@@ -157,112 +218,56 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
           </div>
         ) : (
           <>
-            {/* Only show the large upload box if Doc A isn't loaded */}
-            {!docA.text && (
-              <>
-                <div className="sidebar-header-title">Document</div>
-                <div className="sidebar-upload" role="button" tabIndex="0" aria-label="Upload document A" onClick={() => fileInputARef.current?.click()}>
-                  <input 
-                    type="file" 
-                    ref={fileInputARef}
-                    onChange={(e) => handleFileUpload(e, false)}
-                    style={{display: 'none'}}
-                    accept=".pdf,.txt,.md,text/plain,application/pdf" 
-                    aria-label="Choose file" 
-                  />
-                  <FileUp size={24} style={{ color: 'var(--text-light)', marginBottom: '0.5rem' }} />
-                  <div className="sidebar-upload-text">Drop PDF or click to upload</div>
-                  <div className="sidebar-upload-hint">PDF, TXT, MD</div>
-                </div>
+            {renderSlot('Document A', docA, setDocA, fileInputARef, 'A')}
+            {renderSlot('Document B', docB, setDocB, fileInputBRef, 'B')}
 
-                <div className="sidebar-upload-sep">— or —</div>
-
-                <button className="btn-paste" onClick={() => handlePasteClick(false)} id="paste-btn" aria-label="Paste document text">
-                  ⎘ &nbsp;Paste Text
-                </button>
-                
-                <div style={{ marginTop: '24px' }}>
-                  <div style={{ fontSize: '11px', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>Or try a sample</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                    {SAMPLE_DOCS.map((sample, idx) => (
-                      <button key={idx} className="btn-sample" onClick={() => loadSample(sample, false)}>
-                        <FileText size={14} style={{ marginRight: '6px' }} />
-                        {sample.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </>
-            )}
-        {docA.text && (
-          <div className="sidebar-doc-manager" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            
-            {/* Tabs */}
-            <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>
+            {/* Sample Documents Dropdown */}
+            <div style={{ marginTop: '24px' }}>
               <button 
-                onClick={() => setActiveTab('A')}
-                style={{ 
-                  flex: 1, 
-                  padding: '0.5rem', 
-                  border: 'none', 
-                  background: activeTab === 'A' ? 'var(--bg-light)' : 'transparent',
-                  fontWeight: activeTab === 'A' ? 600 : 400,
-                  color: activeTab === 'A' ? 'var(--text)' : 'var(--text-light)',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
+                className="btn-sample" 
+                onClick={() => setShowSamples(!showSamples)}
+                style={{ justifyContent: 'space-between' }}
               >
-                Doc A
+                <span style={{ display: 'flex', alignItems: 'center' }}>
+                  <FileText size={14} style={{ marginRight: '6px' }} />
+                  Load Sample Document
+                </span>
+                <ChevronDown size={14} style={{ transform: showSamples ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }} />
               </button>
-              <button 
-                onClick={() => setActiveTab('B')}
-                style={{ 
-                  flex: 1, 
-                  padding: '0.5rem', 
-                  border: 'none', 
-                  background: activeTab === 'B' ? 'var(--bg-light)' : 'transparent',
-                  fontWeight: activeTab === 'B' ? 600 : 400,
-                  color: activeTab === 'B' ? 'var(--text)' : 'var(--text-light)',
-                  borderRadius: '4px',
-                  cursor: 'pointer'
-                }}
-              >
-                Doc B
-              </button>
+              
+              {showSamples && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px', paddingLeft: '8px', borderLeft: '2px solid var(--border)' }}>
+                  {SAMPLE_DOCS.map((sample, idx) => (
+                    <button 
+                      key={idx} 
+                      onClick={() => loadSample(sample)}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'var(--text-secondary)',
+                        fontSize: '13px',
+                        textAlign: 'left',
+                        padding: '6px 8px',
+                        cursor: 'pointer',
+                        borderRadius: '4px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                      onMouseOver={(e) => { e.currentTarget.style.background = 'var(--off-white)'; e.currentTarget.style.color = 'var(--text)'; }}
+                      onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+                    >
+                      • {sample.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-
-            {/* Quick action to replace current tab document */}
-            <div style={{ display: 'flex', gap: '0.5rem', padding: '0 1rem' }}>
-               <input 
-                  type="file" 
-                  ref={activeTab === 'A' ? fileInputARef : fileInputBRef}
-                  onChange={(e) => handleFileUpload(e, activeTab === 'B')}
-                  style={{display: 'none'}}
-                  accept=".pdf,.txt,.md,text/plain,application/pdf" 
-                />
-               <button 
-                 onClick={() => activeTab === 'A' ? fileInputARef.current?.click() : fileInputBRef.current?.click()}
-                 className="btn-paste" 
-                 style={{ flex: 1, fontSize: '0.8rem', padding: '0.4rem', border: '1px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-               >
-                 <FileUp size={14} /> Upload {activeTab === 'A' ? (docA.text ? 'New A' : 'A') : (docB.text ? 'New B' : 'B')}
-               </button>
-               <button 
-                 onClick={() => handlePasteClick(activeTab === 'B')}
-                 className="btn-paste" 
-                 style={{ flex: 1, fontSize: '0.8rem', padding: '0.4rem', border: '1px dashed var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
-               >
-                 ⎘ Paste {activeTab === 'A' ? (docA.text ? 'New A' : 'A') : (docB.text ? 'New B' : 'B')}
-               </button>
-            </div>
-            
-          </div>
-        )}
-        </>
+          </>
         )}
       </div>
 
-      <div className="doc-preview-area" id="doc-preview-area" aria-label="Document preview" aria-live="polite" style={{ marginTop: '0.5rem' }}>
+      <div className="doc-preview-area" id="doc-preview-area" aria-label="Document preview" aria-live="polite" style={{ marginTop: '0.5rem', borderTop: '1px solid var(--border)' }}>
         {renderDocumentPreview()}
       </div>
     </aside>

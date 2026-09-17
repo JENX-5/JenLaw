@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Moon, Sun } from 'lucide-react';
 import LandingPage from './components/LandingPage';
 import Sidebar from './components/Sidebar';
 import QuickActions from './components/QuickActions';
@@ -34,6 +35,16 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentRole, setCurrentRole] = useState('Not specified');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Theme state
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   // Resizable sidebar state
   const [sidebarWidth, setSidebarWidth] = useState(300);
@@ -250,6 +261,13 @@ export default function App() {
           </div>
 
           <div className="chat-header-right">
+            <button 
+              className="theme-toggle-btn" 
+              onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')} 
+              title="Toggle theme"
+            >
+              {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
+            </button>
             <div className="role-pill-modern">
               <select 
                 value={currentRole}
