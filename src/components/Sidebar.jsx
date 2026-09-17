@@ -220,7 +220,7 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
           <>
             {renderSlot('Document A', docA, setDocA, fileInputARef, 'A')}
             {renderSlot('Document B', docB, setDocB, fileInputBRef, 'B')}
-
+          </>
         )}
       </div>
 
