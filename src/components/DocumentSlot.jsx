@@ -50,10 +50,15 @@ function DocumentSlot({
     );
   }
 
+  // A <button> cannot contain another <button> (invalid HTML).
+  // Use a <div role="button"> for the outer preview-click target so the
+  // inner Remove <button> remains a proper interactive element.
   return (
-    <button 
-      className="doc-slot" 
-      style={{ 
+    <div
+      className="doc-slot"
+      role="button"
+      tabIndex={0}
+      style={{
         borderColor: isActive ? 'var(--accent)' : 'var(--border)',
         boxShadow: isActive ? '0 0 0 1px var(--accent-subtle)' : 'none',
         cursor: 'pointer',
@@ -61,10 +66,10 @@ function DocumentSlot({
         display: 'block',
         width: '100%',
         padding: 0
-      }} 
+      }}
       onClick={() => setActivePreview(targetStr)}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setActivePreview(targetStr); } }}
       aria-label={`Preview ${title}: ${doc.name || 'Untitled Document'}`}
-      type="button"
     >
       <div style={{ padding: '12px' }}>
         <div className="doc-slot-header">
@@ -76,12 +81,12 @@ function DocumentSlot({
           <div className="doc-slot-meta">{Math.round(doc.text.length / 1000)}k chars</div>
         </div>
         <div className="doc-slot-actions">
-          <button 
-            className="btn-slot-action" 
-            onClick={(e) => { 
-              e.stopPropagation(); 
-              setDoc({ name: '', text: '', type: '' }); 
-              if(activePreview === targetStr) {
+          <button
+            className="btn-slot-action"
+            onClick={(e) => {
+              e.stopPropagation();
+              setDoc({ name: '', text: '', type: '' });
+              if (activePreview === targetStr) {
                 setActivePreview(targetStr === 'A' ? 'B' : 'A');
               }
             }}
@@ -92,7 +97,7 @@ function DocumentSlot({
           </button>
         </div>
       </div>
-    </button>
+    </div>
   );
 }
 
