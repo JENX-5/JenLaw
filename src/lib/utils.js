@@ -2,8 +2,10 @@ import { marked } from 'marked';
 import DOMPurify from 'dompurify';
 import * as pdfjsLib from 'pdfjs-dist';
 
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.mjs?url';
+
 // Configure pdfjs worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 /** Maximum allowed upload file size (5 MB) */
 export const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -185,7 +187,7 @@ export async function extractTextFromPDF(file) {
           return;
         }
 
-        const pdf = await pdfjsLib.getDocument(typedarray).promise;
+        const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
         let fullText = '';
         
         for (let i = 1; i <= pdf.numPages; i++) {
