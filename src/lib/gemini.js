@@ -1,3 +1,10 @@
+/**
+ * Gemini API Client
+ *
+ * Provides functions for communicating with the Gemini AI backend.
+ * Includes automatic model fallback: if the primary model fails,
+ * the client retries with progressively older/smaller models.
+ */
 import { JENLAW_SYSTEM_PROMPT } from './prompts';
 
 const FALLBACK_MODELS = [

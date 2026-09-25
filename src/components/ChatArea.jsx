@@ -1,9 +1,46 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react';
 import { renderMarkdown, formatTime } from '../lib/utils';
-import { Bot, User, Send, StopCircle } from 'lucide-react'; // we installed lucide-react
+import { Bot, User, Send } from 'lucide-react';
 import PropTypes from 'prop-types';
 
-export default function ChatArea({ 
+/**
+ * Memoized single message bubble.
+ * renderMarkdown (marked.parse + DOMPurify) is only re-called when
+ * the message content changes, not on every parent re-render.
+ */
+const ChatMessage = React.memo(function ChatMessage({ msg }) {
+  const html = useMemo(() => renderMarkdown(msg.content), [msg.content]);
+  return (
+    <div className={`chat-message ${msg.role === 'model' ? 'ai' : 'user'}`}>
+      <div className="chat-avatar">
+        {msg.role === 'model' ? <Bot size={18} /> : <User size={18} />}
+      </div>
+      <div className="chat-content">
+        <div
+          className="markdown-body"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      </div>
+      <div className="chat-time">{formatTime(msg.timestamp || new Date())}</div>
+    </div>
+  );
+});
+
+ChatMessage.propTypes = {
+  msg: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    role: PropTypes.string.isRequired,
+    content: PropTypes.string.isRequired,
+    timestamp: PropTypes.instanceOf(Date)
+  }).isRequired
+};
+
+/**
+ * ChatArea renders the conversation log, loading indicator,
+ * and the message input form. All handlers are memoized to
+ * prevent unnecessary child re-renders.
+ */
+const ChatArea = React.memo(function ChatArea({ 
   messages, 
   isLoading, 
   onSendMessage,
@@ -11,31 +48,35 @@ export default function ChatArea({
 }) {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
-  const [inputValue, setInputValue] = React.useState('');
+  const [inputValue, setInputValue] = useState('');
 
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     requestAnimationFrame(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages, isLoading]);
+  }, [messages, isLoading, scrollToBottom]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
     if (!inputValue.trim() || isLoading) return;
     onSendMessage(inputValue);
     setInputValue('');
-  };
+  }, [inputValue, isLoading, onSendMessage]);
 
-  const handleKeyDown = (e) => {
+  const handleKeyDown = useCallback((e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(e);
     }
-  };
+  }, [handleSubmit]);
+
+  const handleInputChange = useCallback((e) => {
+    setInputValue(e.target.value);
+  }, []);
 
   return (
     <div className="chat-area" aria-label="Chat interface">
@@ -49,19 +90,8 @@ export default function ChatArea({
           </div>
         )}
 
-        {messages.map((msg, index) => (
-          <div key={msg.id || index} className={`chat-message ${msg.role === 'model' ? 'ai' : 'user'}`}>
-            <div className="chat-avatar">
-              {msg.role === 'model' ? <Bot size={18} /> : <User size={18} />}
-            </div>
-            <div className="chat-content">
-              <div 
-                className="markdown-body" 
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(msg.content) }} 
-              />
-            </div>
-            <div className="chat-time">{formatTime(msg.timestamp || new Date())}</div>
-          </div>
+        {messages.map((msg) => (
+          <ChatMessage key={msg.id} msg={msg} />
         ))}
 
         {isLoading && (
@@ -70,7 +100,7 @@ export default function ChatArea({
               <Bot size={18} />
             </div>
             <div className="chat-content">
-              <div className="typing-indicator">
+              <div className="typing-indicator" aria-label="AI is thinking">
                 <span></span><span></span><span></span>
               </div>
             </div>
@@ -91,7 +121,7 @@ export default function ChatArea({
             placeholder="Ask about your document... e.g. 'What are my key obligations?'"
             aria-label="Message input"
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={handleInputChange}
             onKeyDown={handleKeyDown}
             disabled={isLoading}
           ></textarea>
@@ -119,7 +149,7 @@ export default function ChatArea({
       </div>
     </div>
   );
-}
+});
 
 ChatArea.propTypes = {
   messages: PropTypes.arrayOf(PropTypes.shape({
@@ -132,3 +162,5 @@ ChatArea.propTypes = {
   onSendMessage: PropTypes.func.isRequired,
   children: PropTypes.node
 };
+
+export default ChatArea;

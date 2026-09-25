@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { Moon, Sun } from 'lucide-react';
-import LandingPage from './components/LandingPage';
 import Sidebar from './components/Sidebar';
 import QuickActions from './components/QuickActions';
 import ChatArea from './components/ChatArea';
+import ErrorBoundary from './components/ErrorBoundary';
 import { useGeminiChat } from './hooks/useGeminiChat';
 import './styles.css';
+
+/** Lazy-load the landing page to reduce initial bundle size */
+const LandingPage = lazy(() => import('./components/LandingPage'));
 
 const ROLES = [
   'Not specified',
@@ -100,10 +103,15 @@ export default function App() {
   }, [isResizing, resize, stopResizing]);
 
   if (view === 'landing') {
-    return <LandingPage onOpenApp={() => setView('app')} />;
+    return (
+      <Suspense fallback={<div className="loading-fallback" aria-label="Loading">Loading...</div>}>
+        <LandingPage onOpenApp={() => setView('app')} />
+      </Suspense>
+    );
   }
 
   return (
+    <ErrorBoundary>
     <div id="app" role="main" className="app-layout-modern" style={{ '--sidebar-width': `${sidebarWidth}px` }}>
       <Sidebar 
         docA={docA}
@@ -179,5 +187,6 @@ export default function App() {
         </ChatArea>
       </div>
     </div>
+    </ErrorBoundary>
   );
 }

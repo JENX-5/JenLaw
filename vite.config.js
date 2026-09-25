@@ -20,7 +20,7 @@ export default defineConfig({
             req.on('end', () => {
               try {
                 req.body = body ? JSON.parse(body) : {};
-              } catch (e) {
+              } catch {
                 req.body = {};
               }
               // Call the Vercel function directly

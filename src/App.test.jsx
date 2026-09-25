@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import App from './App';
 
@@ -25,9 +25,11 @@ vi.mock('./components/QuickActions', () => ({
 }));
 
 describe('App', () => {
-  it('renders LandingPage initially', () => {
+  it('renders LandingPage initially', async () => {
     render(<App />);
-    expect(screen.getByTestId('mock-landing-page')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId('mock-landing-page')).toBeInTheDocument();
+    });
     expect(screen.queryByTestId('mock-sidebar')).not.toBeInTheDocument();
   });
 

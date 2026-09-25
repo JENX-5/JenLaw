@@ -8,13 +8,15 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "dompurify": "^3.4.15",
     "lucide-react": "^1.46.0",
     "marked": "^18.0.13",
     "pdfjs-dist": "^6.3.289",
+    "prop-types": "^15.8.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
@@ -27,7 +29,6 @@
     "dotenv": "^17.4.2",
     "jsdom": "^29.1.1",
     "oxlint": "^1.81.0",
-    "prop-types": "^15.8.1",
     "vite": "^8.3.0",
     "vitest": "^5.0.1"
   }

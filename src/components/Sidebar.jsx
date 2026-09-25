@@ -1,6 +1,6 @@
 import React, { useRef, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { extractTextFromPDF } from '../lib/utils';
+import { extractTextFromPDF, validateFile } from '../lib/utils';
 import { SAMPLE_DOCS } from '../lib/sampleDocs';
 import { FileText } from 'lucide-react';
 import DocumentSlot from './DocumentSlot';
@@ -12,7 +12,6 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
   const [isPasting, setIsPasting] = useState(false);
   const [pasteText, setPasteText] = useState('');
   const [pastingTarget, setPastingTarget] = useState('A');
-  const [showSamples, setShowSamples] = useState(false);
   
   // Track which document is currently being previewed in the bottom pane
   const [activePreview, setActivePreview] = useState('A');
@@ -21,12 +20,26 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Validate before processing to prevent oversized or unsupported uploads
+    const validation = validateFile(file);
+    if (!validation.valid) {
+      alert(validation.error);
+      e.target.value = '';
+      return;
+    }
+
     try {
       let text = '';
       if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) {
         text = await extractTextFromPDF(file);
       } else {
         text = await file.text();
+      }
+
+      if (!text || !text.trim()) {
+        alert(`The file "${file.name}" appears to be empty or could not be read.`);
+        e.target.value = '';
+        return;
       }
       
       const newDoc = { name: file.name, text: text, type: file.type };
@@ -40,7 +53,7 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
     } catch (err) {
       alert(`Error reading document: ${err.message}`);
     }
-    // reset input
+    // reset input so same file can be re-uploaded
     e.target.value = '';
   }, [setDocA, setDocB]);
 
@@ -64,11 +77,10 @@ export default function Sidebar({ docA, docB, setDocA, setDocB, isSidebarOpen, o
 
   const loadSample = useCallback((sample) => {
     // If A is empty, load into A. Otherwise load into B.
-    const isDocB = docA.text ? true : false;
+    const isDocB = !!docA.text;
     const setDoc = isDocB ? setDocB : setDocA;
     setDoc({ name: sample.name, text: sample.text, type: sample.type || 'text/plain' });
     setActivePreview(isDocB ? 'B' : 'A');
-    setShowSamples(false);
   }, [docA.text, setDocA, setDocB]);
 
   const renderDocumentPreview = () => {

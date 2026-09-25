@@ -1,13 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { 
-  ScanSearch, 
   BookOpen, 
   Flag, 
-  FileText, 
-  ListChecks, 
-  Calendar, 
-  DollarSign,
   Lightbulb,
   Scale,
   ShieldCheck,
@@ -15,7 +10,6 @@ import {
   ListTodo
 } from 'lucide-react';
 import { 
-  DEEP_EXTRACT_PROMPT, 
   PLAIN_ENGLISH_PROMPT, 
   RED_FLAGS_PROMPT,
   SCENARIO_PROMPT,
@@ -25,7 +19,7 @@ import {
   BRIEFING_PROMPT
 } from '../lib/prompts';
 
-export default function QuickActions({ onRunAction, hasDocument, hasTwoDocuments }) {
+const QuickActions = ({ onRunAction, hasDocument, hasTwoDocuments }) => {
   const actions = [
     {
       id: 'qa-plain-english',
@@ -99,10 +93,12 @@ export default function QuickActions({ onRunAction, hasDocument, hasTwoDocuments
       ))}
     </div>
   );
-}
+};
 
 QuickActions.propTypes = {
   onRunAction: PropTypes.func.isRequired,
   hasDocument: PropTypes.bool.isRequired,
   hasTwoDocuments: PropTypes.bool.isRequired
 };
+
+export default React.memo(QuickActions);

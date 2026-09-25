@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FileUp, Trash2, Edit3, CheckCircle2 } from 'lucide-react';
 
-export default function DocumentSlot({
+function DocumentSlot({
   title,
   doc,
   setDoc,
@@ -111,3 +111,5 @@ DocumentSlot.propTypes = {
   handleFileUpload: PropTypes.func.isRequired,
   handlePasteClick: PropTypes.func.isRequired
 };
+
+export default React.memo(DocumentSlot);

@@ -982,29 +982,3 @@ Could delay your ability to start a new role. Factor this into any job transitio
 > ⚠️ **This is legal information, not legal advice.** The explanation above is based on the document text provided and is intended to help you understand it. It does not constitute professional legal advice, and you should consult a qualified lawyer before signing or relying on any legal agreement.
 
 *— JenLaw*`;
-
-function getDemoResponse(userMessage) {
-  const msg = userMessage.toLowerCase();
-  if (!state.documentText) return DEMO_RESPONSES.no_doc;
-  if (msg.includes('summarize') || msg.includes('summary') || msg.includes('what is this')) return DEMO_RESPONSES.summarize;
-  return `## 💡 Demo Mode Active
-
-I can see you've asked: *"${userMessage}"*
-
-To get a real AI-powered response based on your document, please:
-
-1. Click the **⚙️ Settings** button in the top-right corner
-2. Enter your **Gemini API key** (free at [aistudio.google.com](https://aistudio.google.com))
-3. Click **Save** and try again
-
----
-
-**What I would analyse:**
-- Your document: **${state.documentName || 'Untitled document'}** (${state.documentText.length.toLocaleString()} characters)
-- Your role: **${state.currentRole}**
-- Your question: "${userMessage}"
-
----
-
-> ⚠️ *JenLaw provides legal information, not legal advice. Always consult a qualified lawyer for decisions that could materially affect your rights.*`;
-}
