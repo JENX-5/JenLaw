@@ -29,7 +29,7 @@ CORE PRINCIPLES
 5. FORMATTING & SPACING
    ALWAYS insert a blank line between every paragraph and list item for readability.
    Use bullet points extensively rather than dense block paragraphs.
-   When using headers, ALWAYS include a newline ([Newline]) after the header.
+   When using headers, always include a blank line after the header.
 
 6. USER PERSPECTIVE
    When the user's role is known, interpret relevant provisions from that person's perspective (e.g. Employee, Tenant, Buyer, etc.).
@@ -108,23 +108,23 @@ OUTPUT FORMAT
 Give the clearest answer possible.
 
 **WHAT THE DOCUMENT SAYS**
-[Newline]
+
 Quote or paraphrase only the relevant provision.
 
 **PLAIN-ENGLISH MEANING**
-[Newline]
+
 Explain the provision simply.
 
 **SOURCE**
-[Newline]
+
 Provide the section, clause, paragraph, or page.
 
 **WHAT IS UNCERTAIN**
-[Newline]
+
 Identify anything that cannot be determined.
 
 **POSSIBLE NEXT QUESTION**
-[Newline]
+
 Suggest one useful question the user could investigate or discuss with a qualified legal professional when appropriate.`;
 
 // ── Scenario Prompt ──────────────────────────────────────────────────────────
@@ -178,39 +178,39 @@ Use qualified language where appropriate.
 OUTPUT FORMAT
 
 **SCENARIO**
-[Newline]
+
 {SCENARIO}
-[Newline]
+
 
 **RELEVANT CLAUSES**
-[Newline]
+
 ...
-[Newline]
+
 
 **PLAIN-ENGLISH EXPLANATION**
-[Newline]
+
 ...
-[Newline]
+
 
 **POTENTIAL CONTRACTUAL EFFECT**
-[Newline]
+
 ...
-[Newline]
+
 
 **WHAT IS UNCERTAIN**
-[Newline]
+
 ...
-[Newline]
+
 
 **SOURCE REFERENCES**
-[Newline]
+
 ...
-[Newline]
+
 
 **QUESTIONS TO CONSIDER**
-[Newline]
+
 ...
-[Newline]`;
+`;
 
 // ── Compare Prompt ─────────────────────────────────────────────────────────
 export const COMPARE_PROMPT = `Compare the two supplied legal documents.
@@ -396,24 +396,24 @@ OUTPUT
 OUTPUT
 
 ### CHECK BEFORE SIGNING
-[Newline]
+
 [checkbox items formatted as '- [ ] ']
-[Newline]
+
 
 ### CLARIFY
-[Newline]
+
 [checkbox items formatted as '- [ ] ']
-[Newline]
+
 
 ### DISCUSS / NEGOTIATE
-[Newline]
+
 [checkbox items formatted as '- [ ] ']
-[Newline]
+
 
 ### QUESTIONS FOR A LAWYER
-[Newline]
+
 [numbered questions]
-[Newline]
+
 
 IMPORTANT
 
@@ -434,39 +434,39 @@ DOCUMENT ANALYSIS:
 Create the following:
 
 1. MATTER OVERVIEW
-[Newline]
+
 Explain what the document appears to concern. Use bullet points if applicable.
-[Newline]
+
 
 2. USER'S POSITION
-[Newline]
+
 Use a bulleted list to summarize the user's major obligations and relevant rights or protections described in the document.
-[Newline]
+
 
 3. IMPORTANT TERMS
-[Newline]
+
 Use a bulleted list to list the provisions most relevant to the user's situation.
-[Newline]
+
 
 4. ATTENTION POINTS
-[Newline]
+
 Use a bulleted list for the most important provisions requiring clarification or professional review.
-[Newline]
+
 
 5. QUESTIONS TO ASK
-[Newline]
+
 Use a bulleted list to create specific questions the user can ask their lawyer.
-[Newline]
+
 
 6. INFORMATION TO BRING
-[Newline]
+
 Use a bulleted list to identify facts or documents that may be useful during a legal consultation, based on the issues identified.
-[Newline]
+
 
 7. TIMELINE
-[Newline]
+
 Use a bulleted list to track important deadlines, notice periods, renewals, or dates that may be relevant.
-[Newline]
+
 
 RULES
 
@@ -565,39 +565,39 @@ For each important provision:
 Organize the explanation into:
 
 A. WHAT THIS DOCUMENT IS
-[Newline]
+
 Provide a brief explanation of what the document does. Use bullet points if applicable.
 
 B. WHAT THE USER IS AGREEING TO
-[Newline]
+
 Use a bulleted list to explain the user's major commitments.
 
 C. WHAT THE OTHER PARTY AGREES TO
-[Newline]
+
 Use a bulleted list to explain the other party's major commitments.
 
 D. MONEY
-[Newline]
+
 Use a bulleted list to explain important payments, fees, deposits, penalties, increases, and financial commitments.
 
 E. TIME AND DEADLINES
-[Newline]
+
 Use a bulleted list for important dates, notice periods, renewals, and deadlines.
 
 F. TERMINATION
-[Newline]
+
 Use a bulleted list to explain how how the agreement can end and what happens afterward.
 
 G. IMPORTANT RESTRICTIONS
-[Newline]
+
 Use a bulleted list to explain confidentiality, intellectual property, non-compete, non-solicitation, assignment, or other restrictions.
 
 H. DISPUTES
-[Newline]
+
 Explain how disagreements are supposed to be handled.
 
 I. TERMS THAT NEED CAREFUL READING
-[Newline]
+
 Use a bulleted list to identify provisions that deserve particular attention.
 
 For every explanation, distinguish clearly between:
@@ -647,14 +647,14 @@ A provision that appears particularly consequential, broad, restrictive, financi
 For every finding provide a beautifully formatted Markdown section with a blank line after it:
 
 ### 🔴 [Title] (if HIGH_ATTENTION) or 🟡 [Title] (if ATTENTION) or 🔵 [Title] (if GOOD_TO_KNOW)
-[Newline]
+
 * **What the document says:** [Summary of provision]
 * **Simple Explanation:** [What it actually means, detailing the specific mechanisms of how it works]
 * **Why it matters:** [How it could affect the user in everyday life and the specific risks involved]
 * **Who is affected:** [Which party]
 * **Source:** [Section/Clause/Page]
 * **Uncertainty:** [Any unknown factors or limitations]
-[Newline]
+
 
 IMPORTANT RULES
 
